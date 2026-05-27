@@ -1,0 +1,44 @@
+version: '3.9'
+
+services:
+
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  backend:
+    build: ./backend
+    env_file:
+    - ./backend/.env
+    container_name: fastapi_backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - mongodb
+
+  frontend:
+    build: ./frontend
+    container_name: react_frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+
+  nextapp:
+    build: ./nextapp
+    container_name: nextjs_app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./nextapp:/app
+      - /app/node_modules
+
+volumes:
+  mongo_data:
